@@ -1,19 +1,20 @@
 package ru.netology;
 
 
+import sun.security.util.SignatureFileVerifier;
 
 public class ProductManager {
     private ProductRepository repository;
+    private Object product;
+    private String search;
 
     public ProductManager(ProductRepository repository) {
         this.repository = repository;
     }
-
     public void add(Product item) {
         repository.save(item);
     }
-
-    public Product[] searchBy(String text) {
+    public Object searchBy(String text) {
         Product[] result = new Product[0];
         for (Product product: repository.findAll()) {
             if (matches(product, text)) {
@@ -26,26 +27,26 @@ public class ProductManager {
         return result;
     }
 
-    public boolean matches(Product product, String search) {
-        if (product instanceof Book) {
-            Book book = (Book) product;
-            if (book.getName().equalsIgnoreCase(search)) {
-                return true;
+        public boolean matches(Product product, String search) {
+            if (product instanceof Book) {
+                Book book = (Book) product;
+                if (book.getName().equalsIgnoreCase(search)) {
+                    return true;
+                }
+                if (book.getAuthor().equalsIgnoreCase(search)) {
+                    return true;
+                }
             }
-            if (book.getAuthor().equalsIgnoreCase(search)) {
-                return true;
-            }
-        }
-        if (product instanceof Smartphone) {
-            Smartphone smartphone = (Smartphone) product;
-            if (smartphone.getName().equalsIgnoreCase(search)) {
-                return true;
-            }
-            if (smartphone.getManufacturer().equalsIgnoreCase(search)) {
-                return true;
+            if (product instanceof Smartphone) {
+                Smartphone smartphone = (Smartphone) product;
+                if (smartphone.getName().equalsIgnoreCase(search)) {
+                    return true;
+                }
+                if (smartphone.getManufacturer().equalsIgnoreCase(search)) {
+                    return true;
+                }
+                return false;
             }
             return false;
         }
-        return false;
     }
-}

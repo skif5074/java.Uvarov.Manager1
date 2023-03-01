@@ -31,7 +31,7 @@ class ProductManagerTest {
         String text = "Third book";
 
         Product[] expected = new Product[]{book3};
-        Product[] actual = manager.searchBy(text);
+        Product[] actual = (Product[]) manager.searchBy(text);
         assertArrayEquals(expected, actual);
     }
 
@@ -40,7 +40,7 @@ class ProductManagerTest {
         String text = "Book name";
 
         Product[] expected = new Product[]{book1, book2};
-        Product[] actual = manager.searchBy(text);
+        Product[] actual = (Product[]) manager.searchBy(text);
         assertArrayEquals(expected, actual);
     }
 
@@ -49,7 +49,7 @@ class ProductManagerTest {
         String text = "Not exist";
 
         Product[] expected = new Product[]{};
-        Product[] actual = manager.searchBy(text);
+        Product[] actual = (Product[]) manager.searchBy(text);
         assertArrayEquals(expected, actual);
     }
 
@@ -58,7 +58,7 @@ class ProductManagerTest {
         String text = "Author1";
 
         Product[] expected = new Product[]{book1};
-        Product[] actual = manager.searchBy(text);
+        Product[] actual = (Product[]) manager.searchBy(text);
         assertArrayEquals(expected, actual);
     }
 
@@ -67,7 +67,7 @@ class ProductManagerTest {
         String text = "Author2";
 
         Product[] expected = new Product[]{book2, book3};
-        Product[] actual = manager.searchBy(text);
+        Product[] actual = (Product[]) manager.searchBy(text);
         assertArrayEquals(expected, actual);
     }
 
@@ -76,7 +76,7 @@ class ProductManagerTest {
         String text = "Not exist author";
 
         Product[] expected = new Product[]{};
-        Product[] actual = manager.searchBy(text);
+        Product[] actual = (Product[]) manager.searchBy(text);
         assertArrayEquals(expected, actual);
     }
 
@@ -85,7 +85,7 @@ class ProductManagerTest {
         String text = "Smartphone3";
 
         Product[] expected = new Product[]{smartphone3};
-        Product[] actual = manager.searchBy(text);
+        Product[] actual = (Product[]) manager.searchBy(text);
         assertArrayEquals(expected, actual);
     }
 
@@ -94,7 +94,7 @@ class ProductManagerTest {
         String text = "Smartphone name";
 
         Product[] expected = new Product[]{smartphone1, smartphone2};
-        Product[] actual = manager.searchBy(text);
+        Product[] actual = (Product[]) manager.searchBy(text);
         assertArrayEquals(expected, actual);
     }
 
@@ -103,7 +103,7 @@ class ProductManagerTest {
         String text = "Not exist name";
 
         Product[] expected = new Product[]{};
-        Product[] actual = manager.searchBy(text);
+        Product[] actual = (Product[]) manager.searchBy(text);
         assertArrayEquals(expected, actual);
     }
 
@@ -112,7 +112,7 @@ class ProductManagerTest {
         String text = "Manufacturer1";
 
         Product[] expected = new Product[]{smartphone1};
-        Product[] actual = manager.searchBy(text);
+        Product[] actual = (Product[]) manager.searchBy(text);
         assertArrayEquals(expected, actual);
     }
 
@@ -121,7 +121,7 @@ class ProductManagerTest {
         String text = "Manufacturer2";
 
         Product[] expected = new Product[]{smartphone2, smartphone3};
-        Product[] actual = manager.searchBy(text);
+        Product[] actual = (Product[]) manager.searchBy(text);
         assertArrayEquals(expected, actual);
     }
 
@@ -130,7 +130,7 @@ class ProductManagerTest {
         String text = "Not exist Manufacturer";
 
         Product[] expected = new Product[]{};
-        Product[] actual = manager.searchBy(text);
+        Product[] actual = (Product[]) manager.searchBy(text);
         assertArrayEquals(expected, actual);
     }
 }
