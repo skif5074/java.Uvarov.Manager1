@@ -1,8 +1,6 @@
 package ru.netology;
 
 
-import sun.security.util.SignatureFileVerifier;
-
 public class ProductManager {
     private ProductRepository repository;
     private Object product;
