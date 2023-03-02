@@ -3,24 +3,21 @@ package ru.netology;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-@EqualsAndHashCode(callSuper = true)
 @Data
+@EqualsAndHashCode(callSuper = true)
 public class Smartphone extends Product {
-    private String manufacturer;
-    public Smartphone (){}
-    public Smartphone(int id, String name, int price, String manufacturer) {
-        super(id, name, price);
+    protected String manufacturer;
+
+    public Smartphone(int id, String title, int price, String manufacturer) {
+        super(id, title, price);
         this.manufacturer = manufacturer;
     }
 
-    @Override
-    public boolean matches(String search) {
-        if (super.matches(search)) {
+    public boolean matches(String searchInput) {
+        if (super.matches(searchInput)) {
             return true;
+        } else {
+            return getManufacturer().toUpperCase().contains(searchInput.toUpperCase());
         }
-        if (search.equalsIgnoreCase(manufacturer)) {
-            return true;
-        }
-        return false;
     }
 }

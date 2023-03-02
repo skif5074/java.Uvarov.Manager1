@@ -1,6 +1,5 @@
 package ru.netology;
 
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -9,14 +8,11 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Data
 public class Product {
-    private int id;
-    private String name;
-    private int price;
+    protected int id;
+    protected String title;
+    protected int price;
 
-    public boolean matches(String search) {
-        if (search.equalsIgnoreCase(name)) {
-            return true;
-        }
-        return false;
+    public boolean matches(String searchInput) {
+        return getTitle().toUpperCase().contains(searchInput.toUpperCase());
     }
 }

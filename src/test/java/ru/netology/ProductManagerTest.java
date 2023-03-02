@@ -2,135 +2,312 @@ package ru.netology;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.doReturn;
 
 class ProductManagerTest {
-    private ProductRepository repository = new ProductRepository();
-    private ProductManager manager = new ProductManager(repository);
-    private Book book1 = new Book(1, "Book name", 100, "Author1");
-    private Book book2 = new Book(2, "Book name", 200, "Author2");
-    private Book book3 = new Book(3, "Third book", 300, "Author2");
-    private Smartphone smartphone1 = new Smartphone(1, "Smartphone name", 300, "Manufacturer1");
-    private Smartphone smartphone2 = new Smartphone(2, "Smartphone name", 500, "Manufacturer2");
-    private Smartphone smartphone3 = new Smartphone(3, "Smartphone3", 700, "Manufacturer2");
+    ProductManager managerEmpty = new ProductManager();
+    ProductManager managerOneProduct = new ProductManager();
+    ProductManager managerAllProduct = new ProductManager();
+
+    Product bookOne = new Book(1, "Война и мир. 3 тома", 1000, "Л.Н.Толстой");
+    Product bookTwo = new Book(2, "История создания Звездных войн", 3000, "Джордж Лукас");
+    Product bookThree = new Book(3, "Русская история в жизнеописаниях ее главнейших деятелей", 2000, "Н.И.Костомаров");
+    Product bookFour = new Book(4, "Исскуство войны", 500, "Сунь-цзы");
+    Product bookFive = new Book(5, "История искусств. Живопись. Скульптура. Архитектура", 1500, "П.П.Гнедич");
+    Product smartphoneOne = new Smartphone(6, "iPhone 13", 200_000, "Apple");
+    Product smartphoneTwo = new Smartphone(7, "iPhone 13 Mini", 150_000, "Apple");
+    Product smartphoneThree = new Smartphone(8, "Galaxy S22 Ultra", 150_000, "Samsung");
+    Product smartphoneFour = new Smartphone(9, "Galaxy Z Fold3 5G", 130_000, "Samsung");
+    Product smartphoneFive = new Smartphone(10, "Galaxy A52", 100_000, "Samsung");
 
     @BeforeEach
-    public void setUp() {
-        manager.add(book1);
-        manager.add(book2);
-        manager.add(book3);
-        manager.add(smartphone1);
-        manager.add(smartphone2);
-        manager.add(smartphone3);
+    void setup() {
+        managerOneProduct.add(bookOne);
+        managerAllProduct.add(bookOne);
+        managerAllProduct.add(bookTwo);
+        managerAllProduct.add(bookThree);
+        managerAllProduct.add(bookFour);
+        managerAllProduct.add(bookFive);
+        managerAllProduct.add(smartphoneOne);
+        managerAllProduct.add(smartphoneTwo);
+        managerAllProduct.add(smartphoneThree);
+        managerAllProduct.add(smartphoneFour);
+        managerAllProduct.add(smartphoneFive);
+    }
+
+    //тесты на логику репозитория
+    @Test
+    void shouldAddRepositoryEmpty() {
+        Product[] expected = new Product[]{smartphoneOne};
+        managerEmpty.add(smartphoneOne);
+        assertArrayEquals(expected, managerEmpty.findAll());
     }
 
     @Test
-    void searchBookByNameIfExistOneProduct() {
-        String text = "Third book";
-
-        Product[] expected = new Product[]{book3};
-        Product[] actual = (Product[]) manager.searchBy(text);
-        assertArrayEquals(expected, actual);
+    void shouldAddRepositoryWithOneProduct() {
+        Product[] expected = new Product[]{
+                bookOne,
+                smartphoneOne};
+        managerOneProduct.add(smartphoneOne);
+        assertArrayEquals(expected, managerOneProduct.findAll());
     }
 
     @Test
-    void searchBookByNameIfExistTwoProduct() {
-        String text = "Book name";
-
-        Product[] expected = new Product[]{book1, book2};
-        Product[] actual = (Product[]) manager.searchBy(text);
-        assertArrayEquals(expected, actual);
+    void shouldAddRepositoryWithTenProduct() {
+        Product bookSix = new Book(11, "Мастер и Маргарита", 1500, "М.А.Булгаков");
+        Product[] expected = new Product[]{
+                bookOne,
+                bookTwo,
+                bookThree,
+                bookFour,
+                bookFive,
+                smartphoneOne,
+                smartphoneTwo,
+                smartphoneThree,
+                smartphoneFour,
+                smartphoneFive,
+                bookSix};
+        managerAllProduct.add(bookSix);
+        assertArrayEquals(expected, managerAllProduct.findAll());
     }
 
     @Test
-    void searchBookByNameIfNotExist() {
-        String text = "Not exist";
-
-        Product[] expected = new Product[]{};
-        Product[] actual = (Product[]) manager.searchBy(text);
-        assertArrayEquals(expected, actual);
+    void shouldRemoveIdFromRepositoryWithOneProduct() {
+        int id = 1;
+        Product[] expected = new Product[0];
+        managerOneProduct.removeId(id);
+        assertArrayEquals(expected, managerOneProduct.findAll());
     }
 
     @Test
-    void searchBookByAuthorIfExistOneProduct() {
-        String text = "Author1";
+    void shouldRemoveIdFromRepositoryWithTenProduct() {
+        int idBook = 3;
+        int idSmartphone = 7;
+        Product[] expected = new Product[]{
+                bookOne,
+                bookTwo,
+                bookFour,
+                bookFive,
+                smartphoneOne,
+                smartphoneThree,
+                smartphoneFour,
+                smartphoneFive};
+        managerAllProduct.removeId(idBook);
+        managerAllProduct.removeId(idSmartphone);
+        assertArrayEquals(expected, managerAllProduct.findAll());
+    }
 
-        Product[] expected = new Product[]{book1};
-        Product[] actual = (Product[]) manager.searchBy(text);
-        assertArrayEquals(expected, actual);
+    //тесты на логику менеджера
+    @Test
+    void shouldMatchesTrue() {
+        assertTrue(managerEmpty.matches(smartphoneOne, "iphONE 13"));
     }
 
     @Test
-    void searchBookByAuthorIfExistTwoProduct() {
-        String text = "Author2";
+    void shouldMatchesFalse() {
+        assertFalse(managerEmpty.matches(smartphoneOne, "Apple"));
+    }
 
-        Product[] expected = new Product[]{book2, book3};
-        Product[] actual = (Product[]) manager.searchBy(text);
-        assertArrayEquals(expected, actual);
+    @Mock
+    ProductRepository repository = Mockito.mock(ProductRepository.class);
+    @InjectMocks
+    ProductManager managerWithMock = new ProductManager(repository);
+
+    @Test
+    void shouldSearchByTitleEmptyMock() {
+        Product[] returnedEmpty = new Product[0];
+        doReturn(returnedEmpty).when(repository).findAll();
+        Product[] expected = new Product[0];
+        assertArrayEquals(expected, managerWithMock.searchByTitle(" "));
     }
 
     @Test
-    void searchBookByAuthorIfNotExist() {
-        String text = "Not exist author";
-
-        Product[] expected = new Product[]{};
-        Product[] actual = (Product[]) manager.searchBy(text);
-        assertArrayEquals(expected, actual);
+    void shouldSearchByTitleMockWithOneProductFound() {
+        Product[] returnedOneProduct = new Product[]{smartphoneFour};
+        doReturn(returnedOneProduct).when(repository).findAll();
+        Product[] expected = new Product[]{smartphoneFour};
+        assertArrayEquals(expected, managerWithMock.searchByTitle("fold3"));
     }
 
     @Test
-    void searchSmartphoneByNameIfExistOneProduct() {
-        String text = "Smartphone3";
-
-        Product[] expected = new Product[]{smartphone3};
-        Product[] actual = (Product[]) manager.searchBy(text);
-        assertArrayEquals(expected, actual);
+    void shouldSearchByTitleMockWithOneProductUnFound() {
+        Product[] returnedOneProduct = new Product[]{smartphoneFour};
+        doReturn(returnedOneProduct).when(repository).findAll();
+        Product[] expected = new Product[0];
+        assertArrayEquals(expected, managerWithMock.searchByTitle("iPhone"));
     }
 
     @Test
-    void searchSmartphoneByNameIfExistTwoProduct() {
-        String text = "Smartphone name";
-
-        Product[] expected = new Product[]{smartphone1, smartphone2};
-        Product[] actual = (Product[]) manager.searchBy(text);
-        assertArrayEquals(expected, actual);
+    void shouldSearchByTitleMockWithAllProductFoundOneResult() {
+        Product[] returnedAllProduct = new Product[]{
+                bookOne,
+                bookTwo,
+                bookThree,
+                bookFour,
+                bookFive,
+                smartphoneOne,
+                smartphoneTwo,
+                smartphoneThree,
+                smartphoneFour,
+                smartphoneFive};
+        doReturn(returnedAllProduct).when(repository).findAll();
+        Product[] expected = new Product[]{bookFour};
+        assertArrayEquals(expected, managerWithMock.searchByTitle("исскуство"));
     }
 
     @Test
-    void searchSmartphoneByNameIfNotExist() {
-        String text = "Not exist name";
-
-        Product[] expected = new Product[]{};
-        Product[] actual = (Product[]) manager.searchBy(text);
-        assertArrayEquals(expected, actual);
+    void shouldSearchByTitleMockWithAllProductFoundMoreResult() {
+        Product[] returnedAllProduct = new Product[]{
+                bookOne,
+                bookTwo,
+                bookThree,
+                bookFour,
+                bookFive,
+                smartphoneOne,
+                smartphoneTwo,
+                smartphoneThree,
+                smartphoneFour,
+                smartphoneFive};
+        doReturn(returnedAllProduct).when(repository).findAll();
+        Product[] expected = new Product[]{
+                bookOne,
+                smartphoneOne,
+                smartphoneTwo,
+                smartphoneFour};
+        assertArrayEquals(expected, managerWithMock.searchByTitle("3"));
     }
 
     @Test
-    void searchSmartphoneByManufacturerIfExistOneProduct() {
-        String text = "Manufacturer1";
+    void shouldSearchByTitleMockWithAllProductUnFound() {
+        Product[] returnedAllProduct = new Product[]{
+                bookOne,
+                bookTwo,
+                bookThree,
+                bookFour,
+                bookFive,
+                smartphoneOne,
+                smartphoneTwo,
+                smartphoneThree,
+                smartphoneFour,
+                smartphoneFive};
+        doReturn(returnedAllProduct).when(repository).findAll();
+        Product[] expected = new Product[0];
+        assertArrayEquals(expected, managerWithMock.searchByTitle("толстой"));
+    }
 
-        Product[] expected = new Product[]{smartphone1};
-        Product[] actual = (Product[]) manager.searchBy(text);
-        assertArrayEquals(expected, actual);
+    //тесты на поиск через rich model
+    @Test
+    void shouldMatchesRichModelTrueTitle() {
+        assertTrue(managerAllProduct.matchesRichModel(smartphoneFive, "galaxy"));
     }
 
     @Test
-    void searchSmartphoneByManufacturerIfExistTwoProduct() {
-        String text = "Manufacturer2";
-
-        Product[] expected = new Product[]{smartphone2, smartphone3};
-        Product[] actual = (Product[]) manager.searchBy(text);
-        assertArrayEquals(expected, actual);
+    void shouldMatchesRichModelFalseTitle() {
+        assertFalse(managerAllProduct.matchesRichModel(smartphoneFive, "iPhone"));
     }
 
     @Test
-    void searchSmartphoneByManufacturerIfNotExist() {
-        String text = "Not exist Manufacturer";
+    void shouldMatchesRichModelTrueFoundAuthor() {
+        assertTrue(managerAllProduct.matchesRichModel(bookOne, "толстой"));
+    }
 
-        Product[] expected = new Product[]{};
-        Product[] actual = (Product[]) manager.searchBy(text);
-        assertArrayEquals(expected, actual);
+    @Test
+    void shouldMatchesRichModelFalseFoundAuthor() {
+        assertFalse(managerAllProduct.matchesRichModel(bookOne, "ЛНТолстой"));
+    }
+
+    @Test
+    void shouldMatchesRichModelTrueFoundManufacturer() {
+        assertTrue(managerAllProduct.matchesRichModel(smartphoneTwo, "apple"));
+    }
+
+    @Test
+    void shouldMatchesRichModelFalseFoundManufacturer() {
+        assertFalse(managerAllProduct.matchesRichModel(smartphoneTwo, "Aple"));
+    }
+
+    @Test
+    void shouldSearchRichModelEmptyMock() {
+        Product[] returnedEmpty = new Product[0];
+        doReturn(returnedEmpty).when(repository).findAll();
+        Product[] expected = new Product[0];
+        assertArrayEquals(expected, managerWithMock.searchByTitleRichModel(" "));
+    }
+
+    @Test
+    void shouldSearchRichModelMockWithOneProductFoundOneResult() {
+        Product[] returnedOneProduct = new Product[]{bookTwo};
+        doReturn(returnedOneProduct).when(repository).findAll();
+        Product[] expected = new Product[]{bookTwo};
+        assertArrayEquals(expected, managerWithMock.searchByTitleRichModel("джордж Лукас"));
+    }
+
+    @Test
+    void shouldSearchRichModelMockWithOneProductUnFound() {
+        Product[] returnedOneProduct = new Product[]{bookTwo};
+        doReturn(returnedOneProduct).when(repository).findAll();
+        Product[] expected = new Product[0];
+        assertArrayEquals(expected, managerWithMock.searchByTitleRichModel("Лакас"));
+    }
+
+    @Test
+    void shouldSearchRichModelMockWithAllProductFoundOneResult() {
+        Product[] returnedAllProduct = new Product[]{
+                bookOne,
+                bookTwo,
+                bookThree,
+                bookFour,
+                bookFive,
+                smartphoneOne,
+                smartphoneTwo,
+                smartphoneThree,
+                smartphoneFour,
+                smartphoneFive};
+        doReturn(returnedAllProduct).when(repository).findAll();
+        Product[] expected = new Product[]{bookThree};
+        assertArrayEquals(expected, managerWithMock.searchByTitleRichModel("н.и.костомаров"));
+    }
+
+    @Test
+    void shouldSearchRichModelMockWithAllProductFoundManyResult() {
+        Product[] returnedAllProduct = new Product[]{
+                bookOne,
+                bookTwo,
+                bookThree,
+                bookFour,
+                bookFive,
+                smartphoneOne,
+                smartphoneTwo,
+                smartphoneThree,
+                smartphoneFour,
+                smartphoneFive};
+        doReturn(returnedAllProduct).when(repository).findAll();
+        Product[] expected = new Product[]{
+                smartphoneThree,
+                smartphoneFour,
+                smartphoneFive};
+        assertArrayEquals(expected, managerWithMock.searchByTitleRichModel("samsung"));
+    }
+
+    @Test
+    void shouldSearchRichModelMockWithAllProductUnFound() {
+        Product[] returnedAllProduct = new Product[]{
+                bookOne,
+                bookTwo,
+                bookThree,
+                bookFour,
+                bookFive,
+                smartphoneOne,
+                smartphoneTwo,
+                smartphoneThree,
+                smartphoneFour,
+                smartphoneFive};
+        doReturn(returnedAllProduct).when(repository).findAll();
+        Product[] expected = new Product[0];
+        assertArrayEquals(expected, managerWithMock.searchByTitleRichModel("шзрщту"));
     }
 }

@@ -1,41 +1,38 @@
 package ru.netology;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor
+@AllArgsConstructor
+@Data
 public class ProductRepository {
-    private Product[] items = new Product[0];
+    private Product[] products = new Product[0];
 
-    public void save(Product item) {
-        int length = items.length + 1;
-        Product[] tmp = new Product[length];
-        System.arraycopy(items, 0, tmp, 0, items.length);
-        int lastIndex = tmp.length - 1;
-        tmp[lastIndex] = item;
-        items = tmp;
+    //добавление продукта в конец массива
+    public void addProduct(Product addProduct) {
+        Product[] tmp = new Product[products.length + 1];
+        System.arraycopy(products, 0, tmp, 0, products.length);
+        tmp[products.length] = addProduct;
+        products = tmp;
     }
 
+    //получить все сохранненные продукты в порядке добавления
     public Product[] findAll() {
-        return items;
+        return getProducts();
     }
 
-    public Product findById(int id) {
-        for (Product item : items) {
-            if (item.getId() == id) {
-                return item;
+    //удалить по id
+    public void removeId(int id) {
+        Product[] tmp = new Product[products.length - 1];
+        int i = 0;
+        for (Product product : products) {
+            if (product.getId() != id) {
+                tmp[i] = product;
+                i++;
             }
         }
-        return null;
-    }
-
-    public void removeById(int id) {
-        int length = items.length - 1;
-        Product[] tmp = new Product[length];
-        int index = 0;
-        for (Product item : items) {
-            if (item.getId() != id) {
-                tmp[index] = item;
-                index++;
-            }
-        }
-        items = tmp;
+        products = tmp;
     }
 }
